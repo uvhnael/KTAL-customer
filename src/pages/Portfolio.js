@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Calendar, ArrowRight, Loader } from "lucide-react";
 import { projectAPI } from "../services/api";
+import { useApi } from "../hooks/useApi";
 import {
   sanitizeHTML,
   getPlainTextFromHTML,
@@ -12,28 +13,15 @@ import {
 const Portfolio = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("all");
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Fetch projects from API
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await projectAPI.getAll();
-        setProjects(response);
-      } catch (err) {
-        setError("Không thể tải danh sách dự án. Vui lòng thử lại sau.");
-        console.error("Error fetching projects:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
+  // Use custom hook for API call
+  const {
+    data: projects,
+    loading,
+    error,
+    refetch,
+  } = useApi(() => projectAPI.getAll());
 
   // Handle ESC key to close modal
   useEffect(() => {
@@ -53,15 +41,15 @@ const Portfolio = () => {
     { id: "all", name: "Tất cả" },
     { id: "completed", name: "Hoàn thành" },
     { id: "in_progress", name: "Đang thực hiện" },
-    { id: "planning", name: "Đang lên kế hoạch" },
-    { id: "on_hold", name: "Tạm dừng" },
+    { id: "draft", name: "Bản nháp" },
+    { id: "archived", name: "Đã lưu trữ" },
   ];
 
   // Lọc dự án theo status
   const filteredProjects =
     activeFilter === "all"
-      ? projects
-      : projects.filter(
+      ? projects || []
+      : (projects || []).filter(
           (project) =>
             project.status && project.status.toLowerCase() === activeFilter
         );
@@ -114,7 +102,7 @@ const Portfolio = () => {
             <div className="text-center py-20">
               <p className="text-red-600 mb-4">{error}</p>
               <button
-                onClick={() => window.location.reload()}
+                onClick={refetch}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
                 Thử lại
@@ -133,9 +121,17 @@ const Portfolio = () => {
                 >
                   <div className="relative h-64 bg-gray-200 overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                      Hình ảnh dự án
-                    </div>
+                    {project.thumbnail ? (
+                      <img
+                        src={project.thumbnail}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-gray-500">
+                        Hình ảnh dự án
+                      </div>
+                    )}
                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => setSelectedProject(project)}
@@ -151,9 +147,10 @@ const Portfolio = () => {
                       {project.title}
                     </h3>
 
-                    {/* Hiển thị content đã được cắt ngắn và sanitize */}
+                    {/* Display description if available, otherwise use content */}
                     <p className="text-gray-600 mb-4 text-sm">
-                      {getPlainTextFromHTML(project.content, 120)}
+                      {project.description ||
+                        getPlainTextFromHTML(project.content, 120)}
                     </p>
 
                     <div className="space-y-2 mb-4">
@@ -217,12 +214,18 @@ const Portfolio = () => {
                     Thông tin dự án
                   </h3>
                   <div className="space-y-2">
+                    {selectedProject.slug && (
+                      <p>
+                        <span className="font-medium">Slug:</span>{" "}
+                        {selectedProject.slug}
+                      </p>
+                    )}
                     <p>
                       <span className="font-medium">Năm:</span>{" "}
                       {selectedProject.year || "N/A"}
                     </p>
                     <p>
-                      <span className="font-medium">Diện tích:</span>{" "}
+                      <span className="font-medium">Khu vực:</span>{" "}
                       {selectedProject.area || "N/A"}
                     </p>
                     <p>
@@ -237,20 +240,35 @@ const Portfolio = () => {
                     </p>
                     <p>
                       <span className="font-medium">Ngày tạo:</span>{" "}
-                      {formatDate(selectedProject.createdAt)}
+                      {formatDate(selectedProject.created_at)}
                     </p>
-                    {selectedProject.updatedAt && (
+                    {selectedProject.updated_at && (
                       <p>
                         <span className="font-medium">Cập nhật:</span>{" "}
-                        {formatDate(selectedProject.updatedAt)}
+                        {formatDate(selectedProject.updated_at)}
                       </p>
                     )}
                   </div>
                 </div>
-                <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                  <span className="text-gray-500">Hình ảnh dự án</span>
+                <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                  {selectedProject.thumbnail ? (
+                    <img
+                      src={selectedProject.thumbnail}
+                      alt={selectedProject.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-500">Hình ảnh dự án</span>
+                  )}
                 </div>
               </div>
+
+              {selectedProject.description && (
+                <div className="mb-6">
+                  <h3 className="font-semibold text-gray-700 mb-3">Mô tả</h3>
+                  <p className="text-gray-600">{selectedProject.description}</p>
+                </div>
+              )}
 
               {selectedProject.content && (
                 <div className="mb-6">
@@ -285,13 +303,13 @@ const Portfolio = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">
-                {projects.length}
+                {projects?.length || 0}
               </div>
               <div className="text-gray-600">Dự án đã hoàn thành</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">
-                {projects.filter((p) => p.status === "completed").length}
+                {projects?.filter((p) => p.status === "completed").length || 0}
               </div>
               <div className="text-gray-600">Dự án hoàn thành</div>
             </div>
@@ -301,7 +319,8 @@ const Portfolio = () => {
             </div>
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">
-                {projects.filter((p) => p.status === "in_progress").length}
+                {projects?.filter((p) => p.status === "in_progress").length ||
+                  0}
               </div>
               <div className="text-gray-600">Dự án đang triển khai</div>
             </div>

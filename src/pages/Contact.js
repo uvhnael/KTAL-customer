@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react";
 import { contactAPI, serviceAPI } from "../services/api";
 import { useApi } from "../hooks/useApi";
+import { CONTACT_INFO } from "../constants";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -74,20 +75,20 @@ const Contact = () => {
     {
       icon: MapPin,
       title: "Địa chỉ",
-      content: "123 Đường ABC, Phường XYZ, Quận 1, TP. Hồ Chí Minh",
-      link: "https://maps.google.com",
+      content: CONTACT_INFO.ADDRESS,
+      link: "https://maps.app.goo.gl/yce8FyAqFKUKjG2QA",
     },
     {
       icon: Phone,
       title: "Điện thoại",
-      content: "0123 456 789",
-      link: "tel:0123456789",
+      content: CONTACT_INFO.PHONE,
+      link: "tel:" + CONTACT_INFO.PHONE,
     },
     {
       icon: Mail,
       title: "Email",
-      content: "info@kientrucanlac.com",
-      link: "mailto:info@kientrucanlac.com",
+      content: CONTACT_INFO.EMAIL,
+      link: "mailto:" + CONTACT_INFO.EMAIL,
     },
     {
       icon: Clock,
@@ -322,11 +323,6 @@ const Contact = () => {
                     </div>
                   );
                 })}
-              </div>
-
-              {/* Map placeholder */}
-              <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-                <span className="text-gray-500">Bản đồ Google Maps</span>
               </div>
             </div>
           </div>

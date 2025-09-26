@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ROUTES } from "./constants";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ChatBox from "./components/ChatBox";
@@ -8,6 +9,7 @@ import Services from "./pages/Services";
 import Portfolio from "./pages/Portfolio";
 import DetailProject from "./pages/DetailProject";
 import Blog from "./pages/Blog";
+import DetailBlog from "./pages/DetailBlog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 
@@ -18,13 +20,14 @@ function App() {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/project/:id" element={<DetailProject />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path={ROUTES.HOME} element={<Home />} />
+            <Route path={ROUTES.SERVICES} element={<Services />} />
+            <Route path={ROUTES.PORTFOLIO} element={<Portfolio />} />
+            <Route path={ROUTES.PROJECT_DETAIL} element={<DetailProject />} />
+            <Route path={ROUTES.BLOG} element={<Blog />} />
+            <Route path={ROUTES.BLOG_DETAIL} element={<DetailBlog />} />
+            <Route path={ROUTES.ABOUT} element={<About />} />
+            <Route path={ROUTES.CONTACT} element={<Contact />} />
           </Routes>
         </main>
         <Footer />

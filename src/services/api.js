@@ -1,22 +1,23 @@
-import axios from 'axios';
+import axios from "axios";
+import { API_CONFIG, STORAGE_KEYS, HTTP_STATUS } from "../constants";
 
-// Cấu hình base URL từ environment variables
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const API_TIMEOUT = process.env.REACT_APP_API_TIMEOUT || 10000;
+// Cấu hình base URL từ constants
+const API_BASE_URL = API_CONFIG.BASE_URL;
+const API_TIMEOUT = API_CONFIG.TIMEOUT;
 
 // Tạo instance axios với cấu hình mặc định
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Interceptor để thêm token vào header (nếu có)
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,10 +32,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
       // Token hết hạn, redirect về login
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
@@ -87,7 +88,7 @@ export const apiService = {
     try {
       const response = await apiClient.post(endpoint, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
@@ -99,27 +100,49 @@ export const apiService = {
 
 // Specific API calls cho các entity
 export const contactAPI = {
-  getAll: () => apiService.get('/contacts'),
-  getById: (id) => apiService.get(`/contacts/${id}`),
-  create: (data) => apiService.post('/contacts', data),
-  update: (id, data) => apiService.put(`/contacts/${id}`, data),
-  delete: (id) => apiService.delete(`/contacts/${id}`),
+  getAll: () => apiService.get(API_CONFIG.ENDPOINTS.CONTACTS),
+  getById: (id) => apiService.get(API_CONFIG.ENDPOINTS.CONTACT_BY_ID(id)),
+  create: (data) => apiService.post(API_CONFIG.ENDPOINTS.CONTACTS, data),
+  update: (id, data) =>
+    apiService.put(API_CONFIG.ENDPOINTS.CONTACT_BY_ID(id), data),
+  delete: (id) => apiService.delete(API_CONFIG.ENDPOINTS.CONTACT_BY_ID(id)),
 };
 
 export const projectAPI = {
-  getAll: () => apiService.get('/projects'),
-  getById: (id) => apiService.get(`/projects/${id}`),
-  create: (data) => apiService.post('/projects', data),
-  update: (id, data) => apiService.put(`/projects/${id}`, data),
-  delete: (id) => apiService.delete(`/projects/${id}`),
+  getAll: () => apiService.get(API_CONFIG.ENDPOINTS.PROJECTS),
+  getById: (id) => apiService.get(API_CONFIG.ENDPOINTS.PROJECT_BY_ID(id)),
+  create: (data) => apiService.post(API_CONFIG.ENDPOINTS.PROJECTS, data),
+  update: (id, data) =>
+    apiService.put(API_CONFIG.ENDPOINTS.PROJECT_BY_ID(id), data),
+  delete: (id) => apiService.delete(API_CONFIG.ENDPOINTS.PROJECT_BY_ID(id)),
 };
 
 export const serviceAPI = {
-  getAll: () => apiService.get('/services'),
-  getById: (id) => apiService.get(`/services/${id}`),
-  create: (data) => apiService.post('/services', data),
-  update: (id, data) => apiService.put(`/services/${id}`, data),
-  delete: (id) => apiService.delete(`/services/${id}`),
+  getAll: () => apiService.get(API_CONFIG.ENDPOINTS.SERVICES),
+  getById: (id) => apiService.get(API_CONFIG.ENDPOINTS.SERVICE_BY_ID(id)),
+  create: (data) => apiService.post(API_CONFIG.ENDPOINTS.SERVICES, data),
+  update: (id, data) =>
+    apiService.put(API_CONFIG.ENDPOINTS.SERVICE_BY_ID(id), data),
+  delete: (id) => apiService.delete(API_CONFIG.ENDPOINTS.SERVICE_BY_ID(id)),
+};
+
+export const blogAPI = {
+  getAll: () => apiService.get(API_CONFIG.ENDPOINTS.BLOGS),
+  getById: (id) => apiService.get(API_CONFIG.ENDPOINTS.BLOG_BY_ID(id)),
+  getBySlug: (slug) => apiService.get(API_CONFIG.ENDPOINTS.BLOG_BY_SLUG(slug)),
+  getCategories: () => apiService.get(API_CONFIG.ENDPOINTS.BLOG_CATEGORIES),
+  create: (data) => apiService.post(API_CONFIG.ENDPOINTS.BLOGS, data),
+  update: (id, data) =>
+    apiService.put(API_CONFIG.ENDPOINTS.BLOG_BY_ID(id), data),
+  delete: (id) => apiService.delete(API_CONFIG.ENDPOINTS.BLOG_BY_ID(id)),
+};
+
+export const chatAPI = {
+  ask: (query, maxResults = 5) =>
+    apiService.post(API_CONFIG.ENDPOINTS.CHAT_ASK, {
+      query,
+      maxResults,
+    }),
 };
 
 export default apiService;

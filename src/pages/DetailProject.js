@@ -12,43 +12,21 @@ import {
   Share2,
 } from "lucide-react";
 import { projectAPI } from "../services/api";
+import { useApi, useAsyncApi } from "../hooks/useApi";
 import { sanitizeHTML, formatDate, getStatusInfo } from "../utils/htmlUtils";
 
 const DetailProject = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [project, setProject] = useState(null);
   const [relatedProjects, setRelatedProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Fetch project details from API
-  useEffect(() => {
-    const fetchProjectDetail = async () => {
-      try {
-        setLoading(true);
-        const response = await projectAPI.getById(id);
-        setProject(response);
-
-        // Fetch related projects (exclude current project)
-        const allProjects = await projectAPI.getAll();
-        const related = allProjects
-          .filter((p) => p.id.toString() !== id)
-          .slice(0, 3); // Get first 3 related projects
-        setRelatedProjects(related);
-      } catch (err) {
-        setError("Không thể tải thông tin dự án. Vui lòng thử lại sau.");
-        console.error("Error fetching project detail:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchProjectDetail();
-    }
-  }, [id]);
-
+  // Use custom hook for fetching project details
+  const {
+    data: project,
+    loading,
+    error,
+    refetch,
+  } = useApi(() => projectAPI.getById(id), [id]);
   // Update document title
   useEffect(() => {
     if (project) {
@@ -100,7 +78,7 @@ const DetailProject = () => {
           <p className="text-red-600 mb-4">{error}</p>
           <div className="space-x-4">
             <button
-              onClick={() => window.location.reload()}
+              onClick={refetch}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
               Thử lại
@@ -181,6 +159,12 @@ const DetailProject = () => {
                 {project.title}
               </h1>
 
+              {project.description && (
+                <p className="text-lg text-blue-100 mb-4">
+                  {project.description}
+                </p>
+              )}
+
               <div className="flex flex-wrap items-center gap-4 text-blue-100">
                 {project.year && (
                   <div className="flex items-center">
@@ -201,8 +185,7 @@ const DetailProject = () => {
                   <span>{statusInfo.text}</span>
                 </div>
               </div>
-            </div>
-
+            </div>{" "}
             <div className="mt-6 lg:mt-0 lg:w-1/3 lg:text-right">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -230,13 +213,21 @@ const DetailProject = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Project Details */}
             <div className="lg:col-span-2">
-              {/* Project Images Placeholder */}
+              {/* Project Images */}
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">Hình ảnh dự án</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-500">Hình ảnh chính</span>
-                  </div>
+                  {project.thumbnail ? (
+                    <img
+                      src={project.thumbnail}
+                      alt={project.title}
+                      className="h-64 w-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <span className="text-gray-500">Hình ảnh chính</span>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-2">
                     {[1, 2, 3, 4].map((index) => (
                       <div
@@ -273,11 +264,11 @@ const DetailProject = () => {
                       <div>
                         <p className="font-medium text-gray-700">Ngày tạo</p>
                         <p className="text-gray-600">
-                          {formatDate(project.createdAt)}
+                          {formatDate(project.created_at)}
                         </p>
                       </div>
                     </div>
-                    {project.updatedAt && (
+                    {project.updated_at && (
                       <div className="flex items-center">
                         <FileText size={20} className="text-green-600 mr-3" />
                         <div>
@@ -285,7 +276,7 @@ const DetailProject = () => {
                             Cập nhật lần cuối
                           </p>
                           <p className="text-gray-600">
-                            {formatDate(project.updatedAt)}
+                            {formatDate(project.updated_at)}
                           </p>
                         </div>
                       </div>
@@ -325,7 +316,7 @@ const DetailProject = () => {
                     <div className="flex items-start">
                       <Ruler size={20} className="text-blue-600 mr-3 mt-1" />
                       <div>
-                        <p className="font-medium text-gray-700">Diện tích</p>
+                        <p className="font-medium text-gray-700">Khu vực</p>
                         <p className="text-gray-600">{project.area}</p>
                       </div>
                     </div>
@@ -361,66 +352,6 @@ const DetailProject = () => {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Related Projects */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Dự án liên quan
-          </h2>
-          {relatedProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              {relatedProjects.map((relatedProject) => {
-                const relatedStatusInfo = getStatusInfo(relatedProject.status);
-                return (
-                  <div
-                    key={relatedProject.id}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer"
-                    onClick={() => navigate(`/project/${relatedProject.id}`)}
-                  >
-                    <div className="relative h-48 bg-gray-200 overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                        Hình ảnh dự án
-                      </div>
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all"></div>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors">
-                        {relatedProject.title}
-                      </h3>
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
-                        <span>{relatedProject.year || "N/A"}</span>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${relatedStatusInfo.textColor} bg-gray-100`}
-                        >
-                          {relatedStatusInfo.text}
-                        </span>
-                      </div>
-                      {relatedProject.area && (
-                        <p className="text-sm text-gray-600">
-                          {relatedProject.area}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center text-gray-600 mb-8">
-              <p>Chưa có dự án liên quan</p>
-            </div>
-          )}
-          <div className="text-center">
-            <button
-              onClick={() => navigate("/portfolio")}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Xem tất cả dự án
-            </button>
           </div>
         </div>
       </section>
