@@ -27,6 +27,8 @@ const DetailProject = () => {
     error,
     refetch,
   } = useApi(() => projectAPI.getById(id), [id]);
+
+  console.log("Project data:", project);
   // Update document title
   useEffect(() => {
     if (project) {
@@ -215,38 +217,25 @@ const DetailProject = () => {
             <div className="lg:col-span-2">
               {/* Project Images */}
               <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">Hình ảnh dự án</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h2 className="text-2xl font-bold mb-4">{project.title}</h2>
+                <div className="w-full">
                   {project.thumbnail ? (
                     <img
                       src={project.thumbnail}
                       alt={project.title}
-                      className="h-64 w-full object-cover rounded-lg"
+                      className="h-auto w-full object-cover rounded-lg"
                     />
                   ) : (
                     <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                       <span className="text-gray-500">Hình ảnh chính</span>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 gap-2">
-                    {[1, 2, 3, 4].map((index) => (
-                      <div
-                        key={index}
-                        className="h-[120px] bg-gray-200 rounded-lg flex items-center justify-center"
-                      >
-                        <span className="text-gray-500 text-sm">
-                          Ảnh {index}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
 
               {/* Project Description */}
               {project.content && (
                 <div className="mb-8">
-                  <h2 className="text-2xl font-bold mb-4">Mô tả dự án</h2>
                   <div
                     className="prose max-w-none text-gray-700 leading-relaxed"
                     dangerouslySetInnerHTML={sanitizeHTML(project.content)}
@@ -264,11 +253,11 @@ const DetailProject = () => {
                       <div>
                         <p className="font-medium text-gray-700">Ngày tạo</p>
                         <p className="text-gray-600">
-                          {formatDate(project.created_at)}
+                          {formatDate(project.createdAt)}
                         </p>
                       </div>
                     </div>
-                    {project.updated_at && (
+                    {project.updatedAt && (
                       <div className="flex items-center">
                         <FileText size={20} className="text-green-600 mr-3" />
                         <div>
@@ -276,7 +265,7 @@ const DetailProject = () => {
                             Cập nhật lần cuối
                           </p>
                           <p className="text-gray-600">
-                            {formatDate(project.updated_at)}
+                            {formatDate(project.updatedAt)}
                           </p>
                         </div>
                       </div>

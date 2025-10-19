@@ -74,7 +74,7 @@ const DetailBlog = () => {
           </div>
           <div className="flex items-center mr-6 mb-2">
             <Calendar size={18} className="mr-2" />
-            <span>{formatDate(blog.created_at)}</span>
+            <span>{formatDate(blog.createdAt)}</span>
           </div>
           {blog.category && (
             <div className="mb-2">

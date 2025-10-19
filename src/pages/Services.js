@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import { serviceAPI } from "../services/api";
 import { useApi, useAsyncApi } from "../hooks/useApi";
+import { CONTACT_INFO } from "../constants";
+import { Link } from "react-router-dom";
 
 const Services = () => {
   // Sử dụng custom hook để fetch services từ API
@@ -186,20 +188,11 @@ const Services = () => {
                       <p className="text-lg font-semibold text-blue-600 mb-4">
                         {service.price || "Liên hệ để biết giá"}
                       </p>
-                      <button
-                        onClick={() => handleConsultation(service.id)}
-                        disabled={creating}
-                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                      >
-                        {creating ? (
-                          <>
-                            <Loader2 className="animate-spin mr-2" size={16} />
-                            Đang gửi...
-                          </>
-                        ) : (
-                          "Tư vấn ngay"
-                        )}
-                      </button>
+                      <div className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                        <Link to="/contact" className="w-full text-center">
+                          Tư vấn miễn phí
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );
@@ -252,7 +245,7 @@ const Services = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Gọi ngay: 0123 456 789
+              Gọi ngay: {CONTACT_INFO.PHONE}
             </button>
             <button className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
               Tư vấn trực tuyến

@@ -1,7 +1,7 @@
 // API Configuration
 export const CONTACT_INFO = {
   ADDRESS: "Ngã ba Việt Lào, Thị xã Kỳ Anh, Tỉnh Hà Tĩnh",
-  PHONE: "0399683037",
+  PHONE: "0399 683 037",
   EMAIL: "uvhnael@gmail.com",
 };
 

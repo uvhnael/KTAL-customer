@@ -41,7 +41,6 @@ const Portfolio = () => {
     { id: "all", name: "Tất cả" },
     { id: "completed", name: "Hoàn thành" },
     { id: "in_progress", name: "Đang thực hiện" },
-    { id: "draft", name: "Bản nháp" },
     { id: "archived", name: "Đã lưu trữ" },
   ];
 
@@ -68,7 +67,6 @@ const Portfolio = () => {
           </p>
         </div>
       </section>
-
       {/* Filter Section */}
       <section className="py-8 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,7 +87,6 @@ const Portfolio = () => {
           </div>
         </div>
       </section>
-
       {/* Projects Grid */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -192,7 +189,6 @@ const Portfolio = () => {
           )}
         </div>
       </section>
-
       {/* Project Detail Modal */}
       {selectedProject && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -296,8 +292,7 @@ const Portfolio = () => {
           </div>
         </div>
       )}
-
-      {/* Stats Section */}
+      {/* Stats Section
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -326,8 +321,7 @@ const Portfolio = () => {
             </div>
           </div>
         </div>
-      </section>
-
+      </section> */}
       {/* CTA Section */}
       <section className="py-20 bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

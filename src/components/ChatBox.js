@@ -37,7 +37,11 @@ const ChatBox = () => {
 
     try {
       // Call API using chatAPI
-      const data = await chatAPI.ask(currentInput, 1);
+      const response = await chatAPI.ask(currentInput, 1);
+      if (response.status !== "success") {
+        throw new Error("API response not successful");
+      }
+      const data = response.data;
 
       // Add bot response
       const botMessage = {

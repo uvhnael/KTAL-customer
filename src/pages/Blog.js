@@ -23,9 +23,9 @@ const Blog = () => {
       try {
         const categoriesData = await blogAPI.getCategories();
         // Add 'all' category if it doesn't exist
-        if (categoriesData && Array.isArray(categoriesData)) {
+        if (categoriesData.data && Array.isArray(categoriesData.data)) {
           const uniqueCategories = [
-            ...new Set(categoriesData.map((cat) => cat)),
+            ...new Set(categoriesData.data.map((cat) => cat)),
           ];
           setCategories([
             { id: "all", name: "Tất cả" },
@@ -57,7 +57,7 @@ const Blog = () => {
   const featuredPost = blogPosts
     ? blogPosts
         .filter((post) => post.status === "published")
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0]
     : null;
 
   // Filter out featured post from regular posts and ensure they're published
@@ -116,7 +116,7 @@ const Blog = () => {
       <section className="py-8 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search */}
+            {/* Search
             <div className="relative flex-1 max-w-md">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -129,8 +129,7 @@ const Blog = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
-
+            </div> */}
             {/* Categories */}
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
@@ -206,7 +205,7 @@ const Blog = () => {
                     <span className="mr-4">{featuredPost.author}</span>
                     <Calendar size={16} className="mr-2" />
                     <span className="mr-4">
-                      {formatDate(featuredPost.created_at)}
+                      {formatDate(featuredPost.createdAt)}
                     </span>
                     <Clock size={16} className="mr-2" />
                     <span>{calculateReadTime(featuredPost.content)}</span>
@@ -281,7 +280,7 @@ const Blog = () => {
                         )}
                         <Calendar size={14} className="mr-1" />
                         <span className="mr-3">
-                          {formatDate(post.created_at)}
+                          {formatDate(post.createdAt)}
                         </span>
                         <Clock size={14} className="mr-1" />
                         <span>{calculateReadTime(post.content)}</span>
