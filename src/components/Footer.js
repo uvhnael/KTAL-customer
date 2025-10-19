@@ -29,19 +29,19 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://www.facebook.com/uvhnael"
                 className="text-gray-400 hover:text-blue-400 transition-colors"
               >
                 <Facebook size={24} />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/uvhnael_"
                 className="text-gray-400 hover:text-blue-400 transition-colors"
               >
                 <Instagram size={24} />
               </a>
               <a
-                href="#"
+                href="https://www.youtube.com/@uvhnael"
                 className="text-gray-400 hover:text-blue-400 transition-colors"
               >
                 <Youtube size={24} />

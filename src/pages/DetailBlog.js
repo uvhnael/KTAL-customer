@@ -1,20 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { Calendar, User, ArrowLeft } from "lucide-react";
 import { blogAPI } from "../services/api";
-import { useApi, useAsyncApi } from "../hooks/useApi";
+import { useApi } from "../hooks/useApi";
 import { formatDate, sanitizeHTML } from "../utils/htmlUtils";
 
 const DetailBlog = () => {
   const { slug } = useParams();
-  const [relatedPosts, setRelatedPosts] = useState([]);
 
   // Use custom hook for fetching blog post
   const {
     data: blog,
     loading,
     error,
-    refetch,
   } = useApi(() => blogAPI.getBySlug(slug), [slug]);
 
   if (loading) {

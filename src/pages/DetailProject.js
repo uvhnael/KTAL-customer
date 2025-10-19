@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Calendar,
@@ -12,13 +12,12 @@ import {
   Share2,
 } from "lucide-react";
 import { projectAPI } from "../services/api";
-import { useApi, useAsyncApi } from "../hooks/useApi";
+import { useApi } from "../hooks/useApi";
 import { sanitizeHTML, formatDate, getStatusInfo } from "../utils/htmlUtils";
 
 const DetailProject = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [relatedProjects, setRelatedProjects] = useState([]);
 
   // Use custom hook for fetching project details
   const {

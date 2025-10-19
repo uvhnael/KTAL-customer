@@ -11,7 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { serviceAPI } from "../services/api";
-import { useApi, useAsyncApi } from "../hooks/useApi";
+import { useApi } from "../hooks/useApi";
 import { CONTACT_INFO } from "../constants";
 import { Link } from "react-router-dom";
 
@@ -23,7 +23,6 @@ const Services = () => {
     error,
     refetch,
   } = useApi(() => serviceAPI.getAll());
-  const { execute: createService, loading: creating } = useAsyncApi();
 
   const services = rawServices?.map((service) => ({
     ...service,
@@ -54,23 +53,6 @@ const Services = () => {
     "Thiết kế Cảnh quan": TreePine,
     "Giám sát Công trình": Eye,
     "Tư vấn & Hỗ trợ": Headphones,
-  };
-
-  // Xử lý submit form tư vấn
-  const handleConsultation = async (serviceId) => {
-    try {
-      // Ví dụ gọi API để tạo yêu cầu tư vấn
-      await createService(() =>
-        serviceAPI.create({
-          serviceId,
-          type: "consultation",
-          requestDate: new Date().toISOString(),
-        })
-      );
-      alert("Yêu cầu tư vấn đã được gửi thành công!");
-    } catch (err) {
-      alert("Có lỗi xảy ra khi gửi yêu cầu tư vấn");
-    }
   };
 
   const displayServices = services;

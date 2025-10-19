@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 // Custom hook để handle API calls
 export const useApi = (apiFunction, dependencies = []) => {
@@ -6,7 +6,7 @@ export const useApi = (apiFunction, dependencies = []) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -22,11 +22,11 @@ export const useApi = (apiFunction, dependencies = []) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiFunction]);
 
   useEffect(() => {
     fetchData();
-  }, dependencies);
+  }, [dependencies, fetchData]);
 
   return { data, loading, error, refetch: fetchData };
 };

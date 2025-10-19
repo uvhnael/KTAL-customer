@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, User, Clock, ArrowRight, Search, Tag } from "lucide-react";
+import { Calendar, User, Clock, ArrowRight, Tag } from "lucide-react";
 import { blogAPI } from "../services/api";
 import { useApi } from "../hooks/useApi";
 import { formatDate } from "../utils/htmlUtils";
 
 const Blog = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [categories, setCategories] = useState([{ id: "all", name: "Tất cả" }]);
 

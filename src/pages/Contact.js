@@ -15,12 +15,7 @@ const Contact = () => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const {
-    data: services,
-    loading,
-    error,
-    refetch,
-  } = useApi(() => serviceAPI.getAll());
+  const { data: services, loading, error } = useApi(() => serviceAPI.getAll());
 
   const handleChange = (e) => {
     const value =
