@@ -1,12 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 
-// Custom hook để handle API calls
 export const useApi = (apiFunction, dependencies = []) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Lưu trữ apiFunction trong ref để tránh re-render
   const apiFunctionRef = useRef(apiFunction);
   apiFunctionRef.current = apiFunction;
 
@@ -26,20 +24,21 @@ export const useApi = (apiFunction, dependencies = []) => {
     } finally {
       setLoading(false);
     }
-  }, []); // Empty dependency array since we use ref
-
-  // Memoize dependencies array
-  const deps = useRef(dependencies);
-  deps.current = dependencies;
+  }, []);
 
   useEffect(() => {
+    if (!Array.isArray(dependencies)) {
+      console.warn("useApi: dependencies should be an array");
+      fetchData();
+      return;
+    }
     fetchData();
-  }, [fetchData, ...(Array.isArray(dependencies) ? dependencies : [])]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, dependencies); // Chỉ dùng dependencies, bỏ [fetchData, dependencies]
 
   return { data, loading, error, refetch: fetchData };
 };
 
-// Custom hook cho async operations (POST, PUT, DELETE)
 export const useAsyncApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
