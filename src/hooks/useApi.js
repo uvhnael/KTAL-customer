@@ -26,11 +26,15 @@ export const useApi = (apiFunction, dependencies = []) => {
     } finally {
       setLoading(false);
     }
-  }, []); // Không phụ thuộc vào apiFunction nữa
+  }, []); // Empty dependency array since we use ref
+
+  // Memoize dependencies array
+  const deps = useRef(dependencies);
+  deps.current = dependencies;
 
   useEffect(() => {
     fetchData();
-  }, dependencies); // Chỉ phụ thuộc vào dependencies được truyền vào
+  }, [fetchData, ...(Array.isArray(dependencies) ? dependencies : [])]);
 
   return { data, loading, error, refetch: fetchData };
 };
