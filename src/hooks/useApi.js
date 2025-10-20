@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 // Custom hook để handle API calls
 export const useApi = (apiFunction, dependencies = []) => {
@@ -6,11 +6,15 @@ export const useApi = (apiFunction, dependencies = []) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Lưu trữ apiFunction trong ref để tránh re-render
+  const apiFunctionRef = useRef(apiFunction);
+  apiFunctionRef.current = apiFunction;
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const result = await apiFunction();
+      const result = await apiFunctionRef.current();
       if (result.status === "error") {
         throw new Error(result.message || "Something went wrong");
       }
@@ -22,11 +26,11 @@ export const useApi = (apiFunction, dependencies = []) => {
     } finally {
       setLoading(false);
     }
-  }, [apiFunction]);
+  }, []); // Không phụ thuộc vào apiFunction nữa
 
   useEffect(() => {
     fetchData();
-  }, [dependencies, fetchData]);
+  }, dependencies); // Chỉ phụ thuộc vào dependencies được truyền vào
 
   return { data, loading, error, refetch: fetchData };
 };
